@@ -51,6 +51,22 @@ Parametrically polymorphic types can be any types & functions written for parame
 
 #### ForAll Extension
 
++++
+
+```haskell
+length :: Foldable t => t a -> Int
+length = ...
+```
+
++++
+
+```haskell
+{-# LANGUAGE ExplicitForAll #-}
+
+length :: forall a . a -> Int
+length = ...
+```
+
 ---
 
 #### Rank 2 Types
