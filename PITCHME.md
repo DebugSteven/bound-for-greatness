@@ -103,15 +103,13 @@ do anything for us other than letting us explicit about our `forall`.
 
 #### Ranks
 
-<div style='font-size: 16px !important'>
 | Type Signature                              | Rank   |
 | ------------------------------------------- | :----: |
 | `Int -> Int`                                | Rank 0 | 
 | `forall a. a -> a`                          | Rank 1 |
 | `Int -> (forall a. a -> a)`                 | Rank 1 |
 | `(forall a. a -> a) -> Int`                 | Rank 2 |
-| `((forall a. a->a) -> Int) -> Bool -> Bool` | Rank 3 |
-</div>
+| <span style='font-size: 16px !important'>((forall a. a->a) -> Int) -> Bool -> Bool</span> | Rank 3 |
 
 Note:
 `Int -> Int` is Rank 0 because there is no quantifier.
