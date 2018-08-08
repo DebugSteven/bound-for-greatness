@@ -12,7 +12,7 @@ We want to write functions with higher-rank types. All that means is that we wan
 
 The motivation behind Rank N types is that we have these parametrically polymorphic functions & after we apply them once to a value, the type variable is now bound to the type of that value. We'll look at some examples, but the issue here is that if you want to use a parametrically polymorphic function on multiple values of different types we'll get an error without the RankNTypes extension. The RankNTypes extension gives us the `forall` keyword & it gives us the ability to defer the binding of type variables to the function call, rather than the at type signature. The `N` in Rank N types means that we can nest these `forall` & added function contexts.
 
-Rank N types are cool because they give us a better understanding of type variables, but they're also sometimes the most elegant way to solve a problem. We see this most notably in the lens library & with runST.
+Rank N types are cool because they give us a better understanding of type variables, but they also allow us to write functions that work & also get them to type check. RankNTytpes are the most elegant way to solve some problems. We see this most notably in the lens library & with runST.
 
 ---
 
@@ -22,6 +22,7 @@ Rank N types are cool because they give us a better understanding of type variab
 - Parametric Polymorphism
 
 Note:
+Before we jump into RankNTypes, we need understand polymorphism.
 In Haskell we have 3 different types of types. We have concrete types, which is what all functions reduce down to when they are fully evaluated.We also have constrained polymorphic and parametric polymorphic type variables. 
 
 ---
@@ -50,7 +51,8 @@ could be
 `Word`, `Integer`, `Int`, `Float`, or `Double` 
 
 Note: 
-Constrained polymorphic type variables have 1 or more typeclasses associated with it. The concrete type that the type variable will be bound to is reduced to only the types that have instances for all the typeclasses that constrain the type variable.
+Constrained polymorphic type variables have 1 or more typeclasses associated with it. The concrete type that the type variable will be bound to is reduced to only the set of types that have instances for all the typeclasses that constrain the type variable.
+So in our example above, a can only be `Word`, `Integer`, `Int`, `Float`, or `Double` 
 because those are the only types that have instances of both the `Num` and the `Ord` typeclass. You can confirm for yourself by asking ghci using `:info Num` and `:info Ord`.
 
 
@@ -65,8 +67,7 @@ id x = x
 
 Note:
 Parametric polymorphic, also known as fully polymorphic, type variables can be any bound to any concrete type & are represented by lowercase letters like `a`. Parametricity means that the expected behavior of a function should be uniform across all types.
-
-Parametrically polymorphic types can be any types & functions written for parametrically polymorphic types have to have uniform behavior across all the types that a type variable can be bound to. The idea that something is applicable for all types is called universal quantification.
+The idea that type variable is applicable for all types is called universal quantification.
 
 ---
 
@@ -80,7 +81,7 @@ length = ...
 ```
 
 Note:
-Haskell actually has Rank 1 types implicitly.
+Haskell has Rank 1 types implicitly.
 Check out the `length` function.
 `a` here can be any type so we can rewrite this.
 
@@ -94,25 +95,26 @@ length = ...
 ```
 
 Note:
-The explicit forall extension only gives us the `forall` keyword.
+The explicit forall extension gives us the `forall` keyword.
 It doesn't work on anything more than Rank 1 types so it doesn't really
 do anything for us other than letting us explicit about our `forall`.
 
 ---
+
 #### Ranks
 
 | Type Signature                              | Rank   |
-| :-----------------------------------------: | :----: |
+| ------------------------------------------- | :----: |
 | `Int -> Int`                                | Rank 0 | 
 | `forall a. a -> a`                          | Rank 1 |
 | `Int -> (forall a. a -> a)`                 | Rank 1 |
 | `(forall a. a -> a) -> Int`                 | Rank 2 |
-| `((forall a. a->a) -> Int) -> Bool -> Bool` | Rank 4 |
+| `((forall a. a->a) -> Int) -> Bool -> Bool` | Rank 3 |
 
 Note:
 `Int -> Int` is Rank 0 because there is no quantifier.
 The other ranks are determined by how many levels the quantifier (the `forall` keyword) is nested in.
-`Int -> (forall a. a -> a)` is rank 1 because `forall a. a -> a` is rank 1 & this example has the `forall` on the right side of the function arrow. The quantifier isn't nested. `(forall a. a -> a) -> Int` is rank 2 because the `forall` is nested 1 layer more because it's on the left side of the `-> Int`. This pattern continues.
+`Int -> (forall a. a -> a)` is rank 1 because `forall a. a -> a` is rank 1 & this example has the `forall` on the right side of the function arrow. The quantifier isn't nested. `(forall a. a -> a) -> Int` is rank 2 because the `forall` is nested 1 layer more because it's on the left side of the `-> Int` in necessary parentheses. This pattern continues.
 
 ---
 #### Rank 2 Types
@@ -124,7 +126,6 @@ messages. - ["Practical type inference for arbitrary-rank types"](https://www.mi
 
 Note:
 Haskell has a language extension for Rank 2 types that is deprecated.
-GHC use to make a distinction between Rank 2 types and Rank N types. <--- TODO is this true?
 Rank 2 is the highest rank where full bidirectional type inference is 
 decidable. GHC doesn't implement the Rank 2 type inference algorithm though,
 so Rank2Types is indistinguishable in practice from RankNTypes.
