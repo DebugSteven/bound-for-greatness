@@ -215,3 +215,13 @@ By adding the `forall` keyword, we tell Haskell that we want to defer
 the binding of the type variable `a` to the function application level.
 
 ---
+
+#### runST
+
+```haskell
+runST :: (forall s. ST s a) -> a
+```
+
+Note:
+Rank 2 types makes the implementation for `runST` possible.
+The type variable `s` represents the state that is being manipulated. Unlike IO, these stateful computations can be used in pure code. `runST` sets up the initial state, runs the computation, discards the state and returns the result `a`. Because the argument `s` must be polymorphic, it has to return one type `a` for all states `s`. This means the result `a` may not depend on the state because it can't unify with `s`.
